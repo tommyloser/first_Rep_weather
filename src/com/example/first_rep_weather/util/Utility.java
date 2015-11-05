@@ -1,5 +1,15 @@
 package com.example.first_rep_weather.util;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.text.TextUtils;
 
 import com.example.first_rep_weather.db.WeatherDB;
@@ -88,5 +98,45 @@ public class Utility {
 			}
 		}
 		return false;
+	}
+	
+	/**
+	 * 解析服务器返回的JSON数据，并将解析出数据储存到本地来
+	 * @param context
+	 * @param response
+	 */
+	public static void handleWeatherResponse(Context context, String response){
+		try{
+			JSONObject jsonObject = new JSONObject(response);
+			JSONObject weatherInfo = jsonObject.getJSONObject("weatherinfo");
+			String cityName = weatherInfo.getString("city");
+			String weatherCode = weatherInfo.getString("cityid");
+			String temp1 = weatherInfo.getString("temp1");
+			String temp2 = weatherInfo.getString("temp2");
+			String weatherDesp = weatherInfo.getString("weather");
+			String publishTime = weatherInfo.getString("ptime");
+			saveWeatherInfo(context , cityName ,weatherCode, temp1,temp2 ,
+					weatherDesp, publishTime);
+		}catch (JSONException e ){
+			e.printStackTrace();
+		}
+	}
+
+	private static void saveWeatherInfo(Context context, String cityName,
+			String weatherCode, String temp1, String temp2, String weatherDesp,
+			String publishTime) {
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy年M月d日", Locale.CHINA);
+		SharedPreferences.Editor editor = PreferenceManager
+				.getDefaultSharedPreferences(context).edit();
+		editor.putBoolean("city_selected", true)
+				.putString("city_name", cityName)
+				.putString("weather_code", weatherCode)
+				.putString("temp1", temp1)
+				.putString("temp2", temp2)
+				.putString("weather_desp", weatherDesp)
+				.putString("publish_time", publishTime)
+				.putString("current_date", sdf.format(new Date()))
+				.commit();
+				;
 	}
 }

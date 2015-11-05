@@ -23,6 +23,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-    </application>
+        <activity android:name="com.example.first_rep_weather.activity.WeatherActivit"/>
+     </application>
 
 </manifest>
